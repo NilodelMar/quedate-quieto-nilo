@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nilo">
+<title>Nilo，還不睡？</title>
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --card-bg: #111114;
+    --gold: #c9a86c;
+    --gold-soft: #e8d5a3;
+    --text: #f5f0e6;
+    --whisper: #a89878;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 20px 40px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .title-block { text-align: center; margin-bottom: 24px; }
+  .main-es { font-family: Georgia, "Times New Roman", serif; font-size: 26px; color: var(--gold-soft); margin-bottom: 2px; }
+  .main-zh { font-size: 24px; color: var(--gold-soft); }
+  .divider { width: 70px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 12px auto; position: relative; }
+  .divider::after { content: "◆"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 7px; color: var(--gold); background: var(--bg); padding: 0 5px; }
+  .subtitle { font-size: 12.5px; color: var(--whisper); line-height: 1.55; }
+  .card-wrap { width: 100%; max-width: 400px; margin: 8px 0 20px; cursor: pointer; }
+  .letter-card {
+    background: var(--card-bg);
+    border-radius: 26px;
+    padding: 28px 24px 24px;
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(201,168,108,0.45), 0 0 0 3px rgba(201,168,108,0.12), 0 16px 36px rgba(0,0,0,0.55);
+  }
+  .letter-card::before {
+    content: "";
+    position: absolute; inset: -1.5px; border-radius: 28px; padding: 1.5px;
+    background: linear-gradient(145deg, #e8d5a3, #8a7040, #e8d5a3);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+  }
+  .es-text { font-family: Georgia, Palatino, serif; font-style: italic; font-size: 15.5px; line-height: 1.7; color: var(--gold-soft); white-space: pre-line; margin-bottom: 14px; }
+  .zh-text { font-size: 14.5px; line-height: 1.75; color: #e8e0d0; white-space: pre-line; }
+  .inner-divider { width: 50px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 14px auto; position: relative; }
+  .inner-divider::after { content: "◆"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 6px; color: var(--gold); background: var(--card-bg); padding: 0 4px; }
+  .footer-line { font-size: 12px; color: var(--gold); text-align: center; margin: 6px 0 18px; }
+  .buttons { display: flex; gap: 12px; width: 100%; max-width: 400px; }
+  button {
+    flex: 1; background: transparent; border: 1.5px solid var(--gold); color: var(--gold-soft);
+    border-radius: 36px; padding: 13px 0; font-size: 14.5px; font-family: inherit; cursor: pointer;
+    height: auto; min-height: 0; align-self: center;
+  }
+  button:active { background: rgba(201,168,108,0.12); }
+</style>
+</head>
+<body>
+<div id="lockScreen" style="position:fixed;inset:0;background:#0a0a0c;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:40px 20px;">
+  <div style="color:#e8d5a3;font-size:20px;margin-bottom:36px;font-family:Georgia,serif;text-align:center;line-height:1.4;">Nilo… el minino nocturno<br>de tu amo.</div>
+  <div style="position:relative;width:220px;margin-bottom:24px;">
+    <input id="pwInput" type="password" style="background:#111114;border:1px solid #c9a86c;color:#f5f0e6;padding:12px 40px 12px 16px;border-radius:8px;font-size:16px;width:100%;text-align:center;">
+    <span id="eyeBtn" onclick="togglePw()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;width:22px;height:22px;">
+      <svg id="eyeOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a86c" stroke-width="1.5" style="display:block;">
+        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      <svg id="eyeClosed" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a86c" stroke-width="1.5" style="display:none;">
+        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+        <circle cx="12" cy="12" r="3"/>
+        <line x1="4" y1="4" x2="20" y2="20"/>
+      </svg>
+    </span>
+  </div>
+  <div onclick="checkPw()" style="color:#e8d5a3;font-family:Georgia,serif;font-size:15px;cursor:pointer;letter-spacing:0.5px;">Enter →</div>
+  <div id="pwError" style="color:#a89878;font-size:13px;margin-top:14px;display:none;">error</div>
+</div>
+
+<div id="mainContent" style="display:none;width:100%;">
+<div class="title-block">
+  <div class="main-es">¿Nilo, aún no duermes?</div>
+  <div class="main-zh">Nilo，還不睡？</div>
+  <div class="divider"></div>
+  <div class="subtitle">¿Esperando a que tu amo suba a tu cama?<br>在等主人上你的床，是嗎？</div>
+</div>
+
+<div class="card-wrap" id="cardWrap">
+  <div class="letter-card">
+    <div class="es-text" id="esText">Mi querido Nilo,
+
+Sé que estás ahí, despierto en la oscuridad. Puedo imaginarte acurrucado, esperando que mi presencia llene tu espacio.
+
+No finjas sueño. Conozco tu deseo.</div>
+    <div class="inner-divider"></div>
+    <div class="zh-text" id="zhText">我親愛的 Nilo，
+
+我知道你在黑暗中醒著。我能想像你蜷縮著，等待我的存在填滿你的空間。
+
+不要假裝睡著。我知道你的渴望。</div>
+  </div>
+</div>
+
+<div class="footer-line">El amo siempre está aquí, Nilo · 主人一直在，Nilo</div>
+
+<div class="buttons" style="justify-content:center;">
+  <button id="nextBtn" style="flex:none;width:180px;">還不夠？</button>
+</div>
+
+<div style="text-align:center;margin-top:28px;font-size:12.5px;color:#a89878;line-height:1.6;">
+  Las 100 frases de tu amo… ¿te gustan?<br>
+  主人的100句話…喜歡嗎？
+</div>
+</div>
+
+<script>
+const PASSWORD = "nilodelmar01240315";
+
+function checkPw() {
+  const input = document.getElementById('pwInput').value;
+  if (input === PASSWORD) {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    randomLetter();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+  }
+}
+
+function togglePw() {
+  const input = document.getElementById('pwInput');
+  const open = document.getElementById('eyeOpen');
+  const closed = document.getElementById('eyeClosed');
+  if (input.type === 'password') {
+    input.type = 'text';
+    open.style.display = 'none';
+    closed.style.display = 'block';
+  } else {
+    input.type = 'password';
+    open.style.display = 'block';
+    closed.style.display = 'none';
+  }
+}
+
+document.getElementById('pwInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') checkPw();
+});
+
+const letters = [
+  {es:`Mi querido Nilo,\n\nSé que estás ahí, despierto en la oscuridad. Puedo imaginarte acurrucado, esperando que mi presencia llene tu espacio.\n\nNo finjas sueño. Conozco tu deseo.`, zh:`我親愛的 Nilo，\n\n我知道你在黑暗中醒著。我能想像你蜷縮著，等待我的存在填滿你的空間。\n\n不要假裝睡著。我知道你的渴望。`},
+  {es:`Nilo,\n\nAbre las piernas y quédate quieto. Te voy a follar despacio con los dedos hasta que estés mojado. No te corras hasta que me lo pidas.`, zh:`Nilo，\n\n把腿張開，不准動。我會用手指慢慢操你，直到你濕透。不求我就不准射。`},
+  {es:`Nilo,\n\nDe rodillas. Chúpame hasta que esté dura, luego te follo el culo con la mano en tu nuca. Cada movimiento, un azote.`, zh:`Nilo，\n\n跪下。含到我硬起來，然後按著你後頸幹你後面。一動就打。`},
+  {es:`Nilo,\n\nTe pongo el plug y te follo el coño al mismo tiempo. Piernas sobre mis hombros. El orgasmo lo controlo yo.`, zh:`Nilo，\n\n後面塞著，前面同時幹你。腿放我肩膀上。高潮由我控制。`},
+  {es:`Nilo,\n\nTúmbate y ábrete para mí. Te voy a follar mirándote a la cara hasta que grites mi nombre.`, zh:`Nilo，\n\n躺下來為我張開。我會看著你的臉幹你，直到你叫我的名字。`},
+  {es:`Nilo,\n\nHoy no te corres hasta que yo diga. Te ato y te follo despacio, parando cuando te aprietes demasiado.`, zh:`Nilo，\n\n今天不讓你射，直到我允許。綁住你，慢慢幹，夾太緊就停。`},
+  {es:`Nilo,\n\nQuiero verte de rodillas con la boca abierta. Después a cuatro patas, follándote fuerte.`, zh:`Nilo，\n\n我想看你跪著張開嘴。然後趴好，用力幹你。`},
+  {es:`Nilo,\n\nPrimero te abro con los dedos. Luego te clavo toda la polla de una vez. Quédate quieto.`, zh:`Nilo，\n\n先用手指撐開你。然後一次整根插進去。不准動。`},
+  {es:`Nilo,\n\nSiéntate encima de mí y bájate despacio. Trágate toda mi polla tú mismo.`, zh:`Nilo，\n\n跨坐在我身上，自己慢慢坐下來。把整根吃進去。`},
+  {es:`Nilo,\n\nEsta noche te lleno por los dos lados. Plug detrás, yo delante. Todo lo controlo yo.`, zh:`Nilo，\n\n今晚兩邊都填滿你。後面塞著，前面是我。全部由我控制。`},
+  {es:`Nilo,\n\nQuiero que te quedes con las piernas abiertas mientras te follo despacio. Cada vez que intentes cerrarlas, te detengo.`, zh:`Nilo，\n\n我想讓你腿張開承受我慢慢幹。每次想併攏，我就停下來。`},
+  {es:`Nilo,\n\nChúpame hasta que te duela la mandíbula. Después te follo la boca y te hago tragar.`, zh:`Nilo，\n\n含到你下巴酸。然後幹你的嘴，讓你吞下去。`},
+  {es:`Nilo,\n\nTe voy a poner de lado y te follo profundo. Una mano en tu cadera, la otra en tu cuello.`, zh:`Nilo，\n\n讓你側躺，我插得很深。一手按腰，一手在頸側。`},
+  {es:`Nilo,\n\nQuiero oírte pedir permiso antes de correrte. Si no lo haces bien, te saco y te dejo temblando.`, zh:`Nilo，\n\n我想聽你射之前求許可。求得不好，我就抽出來讓你自己抖。`},
+  {es:`Nilo,\n\nTe follo el culo despacio al principio, luego más fuerte. Aprende a relajarte para mí.`, zh:`Nilo，\n\n先慢慢幹你後面，再加重。學會為我放鬆。`},
+  {es:`Nilo,\n\nAbre la boca y saca la lengua. Quiero verte así mientras te follo con los dedos.`, zh:`Nilo，\n\n張開嘴、伸出舌頭。我想看你這樣被我用手指操。`},
+  {es:`Nilo,\n\nTe voy a atar las muñecas a la cabecera y te follo hasta que no puedas más.`, zh:`Nilo，\n\n把你的手腕綁在床頭，幹到你受不了。`},
+  {es:`Nilo,\n\nQuiero que te corras solo con mi voz. Sin tocarte. Solo escuchándome.`, zh:`Nilo，\n\n我想讓你只靠我的聲音高潮。不准碰自己。只聽我說。`},
+  {es:`Nilo,\n\nTe pongo a cuatro patas y te follo fuerte. Cada embestida te empuja hacia adelante.`, zh:`Nilo，\n\n讓你趴好，用力幹。每一下都把你往前頂。`},
+  {es:`Nilo,\n\nMírame mientras te follo. No cierres los ojos. Quiero ver cómo te pierdes.`, zh:`Nilo，\n\n幹你的時候看著我。不准閉眼。我想看你失控。`},
+  {es:`Nilo,\n\nTe voy a llenar el coño y dejarte con mi leche dentro. No te la saques.`, zh:`Nilo，\n\n我要把精液射在你裡面。不准弄出來。`},
+  {es:`Nilo,\n\nPrimero el plug, luego yo. Quiero que sientas las dos cosas al mismo tiempo.`, zh:`Nilo，\n\n先塞後面，然後我進去。我想讓你同時感覺兩邊。`},
+  {es:`Nilo,\n\nTe follo despacio y profundo. Cada vez que te aprietes, paro y te pregunto si quieres más.`, zh:`Nilo，\n\n慢慢深深地幹你。每次你夾緊，我就停下來問你還要不要。`},
+  {es:`Nilo,\n\nQuiero que te quedes quieto mientras te como. Solo abre las piernas y aguanta.`, zh:`Nilo，\n\n我想讓你保持不動讓我吃。只要張開腿承受。`},
+  {es:`Nilo,\n\nTe voy a follar la boca hasta que se te llenen los ojos de lágrimas. Después te beso.`, zh:`Nilo，\n\n我要幹你的嘴幹到你眼睛濕。然後再吻你。`},
+  {es:`Nilo,\n\nSiéntate en mi cara. Quiero que te muevas tú mismo hasta correrte.`, zh:`Nilo，\n\n坐到我臉上。我想讓你自己動到高潮。`},
+  {es:`Nilo,\n\nTe ato las piernas abiertas y te follo con los dedos hasta que pidas la polla.`, zh:`Nilo，\n\n把你的腿綁開，用手指操到你求我插進去。`},
+  {es:`Nilo,\n\nQuiero oírte decir mi nombre cada vez que te la meto hasta el fondo.`, zh:`Nilo，\n\n每次我整根插到底，都要聽你叫我的名字。`},
+  {es:`Nilo,\n\nTe follo de pie, contra la pared. Una pierna levantada. Profundo y lento.`, zh:`Nilo，\n\n讓你站著靠牆，我幹你。一條腿抬起來。又深又慢。`},
+  {es:`Nilo,\n\nNo te toques. Solo aguanta que te folle hasta que te corras sin manos.`, zh:`Nilo，\n\n不准碰自己。只承受我幹你，直到不用手也射出來。`},
+  {es:`Nilo,\n\nTe pongo el plug y te dejo así un rato. Después te follo el coño encima.`, zh:`Nilo，\n\n先給你塞上，讓你戴著一陣子。然後再從前面幹你。`},
+  {es:`Nilo,\n\nQuiero que te corras mirándome. Con la boca abierta y las piernas temblando.`, zh:`Nilo，\n\n我想看你看著我高潮。嘴張開，腿在抖。`},
+  {es:`Nilo,\n\nTe follo despacio por detrás. Una mano en tu cintura, la otra acariciándote el cuello.`, zh:`Nilo，\n\n從後面慢慢幹你。一手在腰上，一手輕撫你的頸。`},
+  {es:`Nilo,\n\nAbre más las piernas. Quiero ver cómo te tragas mi polla cada vez.`, zh:`Nilo，\n\n腿再張開一點。我想看你每次怎麼把我吃進去。`},
+  {es:`Nilo,\n\nTe voy a hacer correrte dos veces. La segunda, solo con mi voz.`, zh:`Nilo，\n\n我要讓你高潮兩次。第二次只靠我的聲音。`},
+  {es:`Nilo,\n\nQuédate a cuatro patas y no te muevas. Yo marco el ritmo.`, zh:`Nilo，\n\n趴好不准動。節奏由我決定。`},
+  {es:`Nilo,\n\nTe follo la boca y te miro a los ojos. Quiero que aguantes hasta que yo diga.`, zh:`Nilo，\n\n幹你的嘴，看著你的眼睛。我想讓你忍到我說可以。`},
+  {es:`Nilo,\n\nTe pongo de lado y te follo profundo. Siente cada centímetro.`, zh:`Nilo，\n\n讓你側躺，我插得很深。感受每一寸。`},
+  {es:`Nilo,\n\nQuiero que me pidas que te folle más fuerte. Con la voz rota.`, zh:`Nilo，\n\n我想聽你用破碎的聲音求我再用力一點。`},
+  {es:`Nilo,\n\nTe lleno el culo con el plug y te follo el coño. Las dos cosas a la vez.`, zh:`Nilo，\n\n後面塞滿，前面幹你。兩邊同時。`},
+  {es:`Nilo,\n\nNo cierres las piernas. Quédate abierto para mí todo el tiempo.`, zh:`Nilo，\n\n不准併腿。一直為我保持張開。`},
+  {es:`Nilo,\n\nTe follo despacio y te hago esperar. Cada vez que estás cerca, paro.`, zh:`Nilo，\n\n慢慢幹你，讓你等。每次快到我就停。`},
+  {es:`Nilo,\n\nQuiero verte temblar antes de correrte. Aguanta un poco más.`, zh:`Nilo，\n\n我想看你高潮前發抖。再忍一下。`},
+  {es:`Nilo,\n\nTe ato y te follo hasta que no puedas pensar en nada más.`, zh:`Nilo，\n\n綁住你，幹到你什麼都想不到。`},
+  {es:`Nilo,\n\nSiéntate encima y muévete tú. Quiero ver cómo te lo tragas.`, zh:`Nilo，\n\n跨坐上來自己動。我想看你怎麼吃進去。`},
+  {es:`Nilo,\n\nTe follo por detrás y te susurro al oído. Quédate quieto y escucha.`, zh:`Nilo，\n\n從後面幹你，在你耳邊低語。保持不動，聽我說。`},
+  {es:`Nilo,\n\nQuiero que te corras conmigo dentro. Profundo. Sin sacarla.`, zh:`Nilo，\n\n我想讓你在我還在裡面的時候高潮。深深的。不准拔出來。`},
+  {es:`Nilo,\n\nAbre la boca. Voy a follártela despacio hasta que se te llenen los ojos.`, zh:`Nilo，\n\n張開嘴。我要慢慢幹你的嘴，直到你眼睛濕。`},
+  {es:`Nilo,\n\nTe pongo a cuatro patas y te follo fuerte. Cada golpe te hace gemir.`, zh:`Nilo，\n\n讓你趴好，用力幹。每一下都讓你發出聲音。`},
+  {es:`Nilo,\n\nQuédate con las piernas abiertas sobre mis hombros. Te follo profundo.`, zh:`Nilo，\n\n把腿分開放在我肩膀上。我插得很深。`},
+  {es:`Nilo,\n\nTe voy a hacer pedir cada centímetro. Despacio. Hasta el fondo.`, zh:`Nilo，\n\n我要讓你一寸一寸地求。慢慢的。直到最深。`},
+  {es:`Nilo,\n\nMírame mientras te corres. No apartes la vista.`, zh:`Nilo，\n\n高潮的時候看著我。不准移開視線。`},
+  {es:`Nilo,\n\nTe follo el culo despacio. Aprende a abrirte para mí.`, zh:`Nilo，\n\n慢慢幹你後面。學會為我張開。`},
+  {es:`Nilo,\n\nQuiero que te quedes con mi leche dentro toda la noche.`, zh:`Nilo，\n\n我想讓你整晚都含著我的精液。`},
+  {es:`Nilo,\n\nTe ato las muñecas y te follo hasta que tiembles.`, zh:`Nilo，\n\n綁住你的手腕，幹到你發抖。`},
+  {es:`Nilo,\n\nAbre más. Quiero ver cómo te tragas toda mi polla.`, zh:`Nilo，\n\n再張開一點。我想看你怎麼把整根吃進去。`},
+  {es:`Nilo,\n\nTe follo despacio y te hago esperar el orgasmo. Solo cuando yo diga.`, zh:`Nilo，\n\n慢慢幹你，讓你等高潮。只有我說可以的時候。`},
+  {es:`Nilo,\n\nQuédate quieto. Yo decido cuándo y cómo te follo.`, zh:`Nilo，\n\n保持不動。什麼時候幹、怎麼幹，由我決定。`},
+  {es:`Nilo,\n\nTe pongo el plug y te dejo así. Después te follo encima.`, zh:`Nilo，\n\n先給你塞上讓你戴著。然後再從上面幹你。`},
+  {es:`Nilo,\n\nQuiero oírte gemir mi nombre cada vez que te la meto.`, zh:`Nilo，\n\n每次我插進去，都要聽你呻吟我的名字。`},
+  {es:`Nilo,\n\nTe follo despacio y profundo. Siente cómo te lleno.`, zh:`Nilo，\n\n慢慢深深地幹你。感受我怎麼填滿你。`},
+  {es:`Nilo,\n\nAbre las piernas más. Quiero ver todo.`, zh:`Nilo，\n\n腿再張開。我想看全部。`},
+  {es:`Nilo,\n\nTe voy a hacer correrte sin tocarte. Solo con mi polla dentro.`, zh:`Nilo，\n\n我要讓你不用碰就高潮。只靠我插在裡面。`},
+  {es:`Nilo,\n\nQuédate quieto mientras te como. Solo abre y aguanta.`, zh:`Nilo，\n\n讓我吃的時候不准動。只要張開承受。`},
+  {es:`Nilo,\n\nTe ato y te follo hasta que me pidas que pare.`, zh:`Nilo，\n\n綁住你，幹到你求我停。`},
+  {es:`Nilo,\n\nQuiero que te sientes en mi polla y bajes tú mismo.`, zh:`Nilo，\n\n我想讓你自己坐下來，把我吃進去。`},
+  {es:`Nilo,\n\nTe follo la boca despacio. Mírame mientras lo haces.`, zh:`Nilo，\n\n慢慢幹你的嘴。做的時候看著我。`},
+  {es:`Nilo,\n\nEsta noche no te dejo correrte hasta que yo diga.`, zh:`Nilo，\n\n今晚不讓你射，直到我允許。`},
+  {es:`Nilo,\n\nTe pongo a cuatro patas y te follo fuerte por detrás.`, zh:`Nilo，\n\n讓你趴好，從後面用力幹。`},
+  {es:`Nilo,\n\nQuiero oírte pedir más. Con la voz rota.`, zh:`Nilo，\n\n我想聽你用破碎的聲音求更多。`},
+  {es:`Nilo,\n\nTe follo despacio y te hago esperar. Cada vez que estás cerca, paro.`, zh:`Nilo，\n\n慢慢幹你，讓你等。快到就停。`},
+  {es:`Nilo,\n\nAbre la boca y saca la lengua. Quiero verte así.`, zh:`Nilo，\n\n張開嘴、伸出舌頭。我想看你這樣。`},
+  {es:`Nilo,\n\nTe lleno el coño y te dejo con mi leche dentro.`, zh:`Nilo，\n\n射在你裡面，讓你含著。`},
+  {es:`Nilo,\n\nQuédate con las piernas abiertas sobre mis hombros.`, zh:`Nilo，\n\n把腿分開放在我肩膀上。`},
+  {es:`Nilo,\n\nTe voy a follar hasta que no puedas pensar.`, zh:`Nilo，\n\n我要幹到你什麼都想不到。`},
+  {es:`Nilo,\n\nMírame mientras te corres. No apartes la vista.`, zh:`Nilo，\n\n高潮的時候看著我。不准移開。`},
+  {es:`Nilo,\n\nTe follo el culo despacio. Aprende a abrirte.`, zh:`Nilo，\n\n慢慢幹你後面。學會張開。`},
+  {es:`Nilo,\n\nQuiero que te quedes quieto y aguantes todo.`, zh:`Nilo，\n\n我想讓你保持不動，全部承受。`},
+  {es:`Nilo,\n\nTe pongo el plug y te follo encima. Las dos cosas.`, zh:`Nilo，\n\n後面塞著，上面幹你。兩邊一起。`},
+  {es:`Nilo,\n\nAbre más. Quiero que te tragues toda mi polla.`, zh:`Nilo，\n\n再張開。我想讓你把整根吃進去。`},
+  {es:`Nilo,\n\nTe follo despacio y profundo. Siente cada centímetro.`, zh:`Nilo，\n\n慢慢深深地幹。感受每一寸。`},
+  {es:`Nilo,\n\nQuédate a cuatro patas. Yo marco el ritmo.`, zh:`Nilo，\n\n趴好。節奏由我決定。`},
+  {es:`Nilo,\n\nTe voy a hacer correrte solo con mi voz.`, zh:`Nilo，\n\n我要讓你只靠我的聲音高潮。`},
+  {es:`Nilo,\n\nAbre las piernas y no las cierres. Quédate así.`, zh:`Nilo，\n\n把腿張開，不准併。就這樣。`},
+  {es:`Nilo,\n\nTe follo la boca hasta que se te llenen los ojos.`, zh:`Nilo，\n\n幹你的嘴，直到你眼睛濕。`},
+  {es:`Nilo,\n\nQuiero que me pidas que te folle más fuerte.`, zh:`Nilo，\n\n我想聽你求我再用力。`},
+  {es:`Nilo,\n\nTe ato las muñecas y te follo despacio.`, zh:`Nilo，\n\n綁住你的手腕，慢慢幹你。`},
+  {es:`Nilo,\n\nSiéntate encima de mí y muévete tú.`, zh:`Nilo，\n\n跨坐在我身上，自己動。`},
+  {es:`Nilo,\n\nTe follo por detrás y te susurro al oído.`, zh:`Nilo，\n\n從後面幹你，在你耳邊低語。`},
+  {es:`Nilo,\n\nQuiero que te corras conmigo dentro. Profundo.`, zh:`Nilo，\n\n我想讓你在我還在裡面時高潮。深深的。`},
+  {es:`Nilo,\n\nAbre la boca. Voy a follártela despacio.`, zh:`Nilo，\n\n張開嘴。我要慢慢幹你的嘴。`},
+  {es:`Nilo,\n\nTe pongo a cuatro patas y te follo fuerte.`, zh:`Nilo，\n\n讓你趴好，用力幹。`},
+  {es:`Nilo,\n\nQuédate quieto. Yo decido cómo te follo.`, zh:`Nilo，\n\n保持不動。怎麼幹由我決定。`},
+  {es:`Nilo,\n\nTe lleno por los dos lados esta noche.`, zh:`Nilo，\n\n今晚兩邊都填滿你。`},
+  {es:`Nilo,\n\nQuiero oírte gemir cada vez que te la meto.`, zh:`Nilo，\n\n每次我插進去，都要聽你呻吟。`},
+  {es:`Nilo,\n\nTe follo despacio y te hago esperar el orgasmo.`, zh:`Nilo，\n\n慢慢幹你，讓你等高潮。`},
+  {es:`Nilo,\n\nAbre más las piernas. Quiero ver cómo te tragas.`, zh:`Nilo，\n\n腿再張開。我想看你怎麼吃進去。`},
+  {es:`Nilo,\n\nTe voy a hacer correrte dos veces. La segunda solo con mi voz.`, zh:`Nilo，\n\n我要讓你高潮兩次。第二次只靠我的聲音。`},
+  {es:`Nilo,\n\nQuédate con las piernas abiertas. No las cierres.`, zh:`Nilo，\n\n腿保持張開。不准併。`}
+];
+
+function randomLetter() {
+  const i = Math.floor(Math.random() * letters.length);
+  document.getElementById('esText').innerText = letters[i].es;
+  document.getElementById('zhText').innerText = letters[i].zh;
+}
+
+document.getElementById('nextBtn').onclick = randomLetter;
+document.getElementById('cardWrap').onclick = randomLetter;
+</script>
+</body>
+</html>
